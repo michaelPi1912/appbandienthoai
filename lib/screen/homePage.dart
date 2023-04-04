@@ -18,37 +18,26 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
         constraints: BoxConstraints.expand(),
-        child: 
-        FutureBuilder(
-          future: fetchProducts(),
-          builder: (context, snapshot) {
-            if(snapshot.hasData){
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data!.length,
-                itemBuilder: ((context, index) {
-                  return ListTile(
-                    leading: Image.network(snapshot.data![index].image.toString()),
-                    title: Text(snapshot.data![index].name.toString()),
-                    subtitle: Text(snapshot.data![index].description.toString()),
-                    onTap: (){
-                    },
-                  );
-                })
+        child: FutureBuilder(
+            future: fetchProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  itemCount: snapshot.data?.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(snapshot.data![index].name.toString()),
+                        // subtitle: Text(snapshot.data[index].price.toString()),
+                      ),
+                    );
+                  },
                 );
-            }else if(snapshot.hasError){
-              return Container(
-                child: Center(
-                  child: Text("Not Found Data"),
-                ),
-              );
-            }else{
-              return Container(
-                child: Center(
-                  child: CircularProgressIndicator()),
-              );
-            }
-          }),
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return const CircularProgressIndicator();
+            }),
       ),
     );
   }
