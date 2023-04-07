@@ -1,13 +1,13 @@
 // ignore_for_file: file_names
 
-class Product{
+class Product {
   String? id;
   String? image;
   String? name;
   String? description;
-  int? rate;
-  int? price;
-  int? discount;
+  double? rate;
+  double? price;
+  double? discount;
   int? sold;
   int? inventory;
   String? brand;
@@ -18,22 +18,22 @@ class Product{
 
   Product({
     this.id,
-      this.image,
-      this.name,
-      this.description,
-      this.rate,
-      this.price,
-      this.discount,
-      this.sold,
-      this.inventory,
-      this.brand,
-      this.origins,
-      this.category,
-      this.img,
-      this.listAttributeOption,
+    this.image,
+    this.name,
+    this.description,
+    this.rate,
+    this.price,
+    this.discount,
+    this.sold,
+    this.inventory,
+    this.brand,
+    this.origins,
+    this.category,
+    this.img,
+    this.listAttributeOption,
   });
 
-  Product.fromJson(Map<String, dynamic> json){
+  Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     image = json['image'];
     name = json['name'];
@@ -55,7 +55,7 @@ class Product{
     }
   }
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['image'] = this.image;
@@ -108,7 +108,7 @@ class ListAttributeOption {
 }
 
 class Values {
-  int? compare;
+  double? compare;
   String? idType;
   String? id;
   String? value;

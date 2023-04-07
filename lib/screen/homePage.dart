@@ -103,6 +103,7 @@ class _HomePageState extends State<HomePage> {
                                 itemCount: snapshot.data?.length,
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
+                                    //navigative
                                     onTap: (){
                                       Navigator.push(context, MaterialPageRoute(builder: (context)=> detailProduct(product: snapshot.data![index],)));
                                     },
