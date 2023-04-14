@@ -1,6 +1,11 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:project_final/model/UserModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,8 +15,74 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-    bool isLogin = false;
+  
+  late SharedPreferences sharedPreferences;
+  bool isLogin = false;
+  //anh xa textfield
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
+  User? user; 
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
+  checkLoginStatus() async{
+    sharedPreferences = await SharedPreferences.getInstance();
+    if(sharedPreferences.getString("token") == null){
+      setState(() {
+        isLogin = false;
+      });
+    }else{
+      setState(() {
+        isLogin = true;
+      });
+    }
+  }
+    
+  
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  void disposeP() {
+    // Clean up the controller when the widget is disposed.
+    passwordController.dispose();
+    super.dispose();
+  }
+  //Sign In Void
+  signIn(String email, pass) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    Map data = {
+      'phone': email,
+      'password': pass
+    };
+    Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*",};
+    var jsonResponse = null;
+    var response = await http.post(Uri.parse('https://phone-s.herokuapp.com/api/auth/login'),
+                             body: jsonEncode(data), headers: headers);
+    if(response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      if(jsonResponse != null) {
+        //Xu ly data User from body
+        setState(() {
+          isLogin = true;
+        });
+        sharedPreferences.setString("token", jsonResponse['data']['accessToken']);
+      }
+    }
+    else {
+      setState(() {
+        isLogin = false;
+      });
+      print(response.body);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       radius: 120,
                     ),
                   ),
-
+                  // Text(user!.email.toString()),
                   //Info
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -114,9 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     icon: const Icon(Icons.discount),
                     onPressed: () {
-                    setState(() {
-                      isLogin = false;
-                    });
+                    
                   },label: const Text("Ưu đãi của bạn"),),
                   //Logout
                   ElevatedButton.icon(
@@ -127,9 +196,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     icon: const Icon(Icons.exit_to_app),
                     onPressed: () {
-                    setState(() {
-                      isLogin = false;
-                    });
+                      sharedPreferences.clear;
+                      sharedPreferences.commit();
+                      setState(() {
+                        isLogin = false;
+                      });
                   },label: const Text("Log out"),),
                   ]),
       ),
@@ -164,9 +235,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.white70),
                       ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(8.0),
               child: TextField(
+                controller: phoneController,
                 decoration: InputDecoration(
                   hintText: "Phone Number",
                   hintStyle: TextStyle(color: Colors.white70),
@@ -174,9 +246,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(8.0),
               child: TextField(
+                controller: passwordController,
+                obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Password",
                   hintStyle: TextStyle(color: Colors.white70),
@@ -188,10 +262,8 @@ class _ProfilePageState extends State<ProfilePage> {
               style: ElevatedButton.styleFrom(
                 primary: Colors.green,
               ),
-              onPressed: () {
-                  setState(() { 
-                    isLogin = true;
-                  });
+              onPressed: () { 
+                    signIn(phoneController.text, passwordController.text);
                 },
               child: const Text("Login", style: TextStyle(color: Colors.white70),),),
           ],

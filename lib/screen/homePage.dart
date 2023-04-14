@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_interpolation_to_compose_strings
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -79,12 +79,34 @@ class _HomePageState extends State<HomePage> {
               ),
               child: Column(
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Align(alignment: Alignment.centerLeft,
                       child: Text("THƯƠNG HIỆU NỔI BẬT")),
                   ),
-                  // _buildBtnRow(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                              'https://cdn.tgdd.vn/Brand/1/logo-iphone-220x48.png',
+                              height: 75.0,
+                              width: 150.0,
+                              ),
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                              'https://cdn.tgdd.vn/Brand/1/samsungnew-220x48-1.png',
+                              height: 50.0,
+                              width: 50.0,
+                              ),
+                        ),
+                      ],
+                    ),
+                  )
                 ],
                 
             ),),
@@ -105,20 +127,26 @@ class _HomePageState extends State<HomePage> {
                                   return GestureDetector(
                                     //navigative
                                     onTap: (){
-                                      Navigator.push(context, MaterialPageRoute(builder: (context)=> detailProduct(product: snapshot.data![index],)));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context)
+                                      => detailProduct(product: snapshot.data![index],)));
                                     },
-                                    child: Card(
-                                      child: Column(
-                                        children: <Widget>[
-                                          Text("Giảm giá: "+ snapshot.data![index].discount.toString()+"%", style:  const TextStyle(color: Colors.red),),
-                                          Image.network(snapshot.data![index].image.toString(), width: 100,height: 100,),
-                                          Text(snapshot.data![index].name.toString()),
-                                          Text(snapshot.data![index].price.toString(), style:  const TextStyle(color: Colors.red),)
-                                        ],
-                                        // title: Text(snapshot.data![index].name.toString()),
-                                        // // subtitle: Text(snapshot.data[index].price.toString()),
+                                    child: 
+                                      Card(
+                                        child: Column(
+                                          children: <Widget>[
+                                            Text("Giảm giá: "+ snapshot.data![index].discount.toString()+"%", style:  const TextStyle(color: Colors.red),),
+                                            Image.network(
+                                              snapshot.data![index].image.toString(), 
+                                              width: MediaQuery.of(context).size.width/2,
+                                              height: MediaQuery.of(context).size.height/6,
+                                            ),
+                                            Text(snapshot.data![index].name.toString()),
+                                            Text(snapshot.data![index].price.toString(), style:  const TextStyle(color: Colors.red),)
+                                          ],
+                                          // title: Text(snapshot.data![index].name.toString()),
+                                          // // subtitle: Text(snapshot.data[index].price.toString()),
+                                        ),
                                       ),
-                                    ),
                                   );
                                 }, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                             );
