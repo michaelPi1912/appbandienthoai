@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_final/model/UserModel.dart';
@@ -22,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
-  User? user; 
+  User? _user; 
   @override
   void initState() {
     super.initState();
@@ -74,6 +75,8 @@ class _ProfilePageState extends State<ProfilePage> {
           isLogin = true;
         });
         sharedPreferences.setString("token", jsonResponse['data']['accessToken']);
+        //fetch User data
+        _user = parseUser(response.body);
       }
     }
     else {
@@ -123,7 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       radius: 120,
                     ),
                   ),
-                  // Text(user!.email.toString()),
+                  Text(_user!.email.toString()),
                   //Info
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -272,6 +275,12 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+}
+
+User parseUser(String body) {
+  final Map<String, dynamic> jsonMap = jsonDecode(body);
+  User user = User.fromJson(jsonMap["data"]["user"]);
+  return user;
 }
 
  

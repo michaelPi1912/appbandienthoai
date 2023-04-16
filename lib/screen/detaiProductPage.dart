@@ -62,7 +62,9 @@ class _detailProductState extends State<detailProduct> {
                           ),
                        ),
                        Container(
-                        decoration: BoxDecoration(color: Colors.amber),
+                        decoration: BoxDecoration(
+                          // color: Colors.amber
+                          ),
                          child: SizedBox(
                             height: 250,
                             width: MediaQuery.of(context).size.width*0.45,
@@ -87,28 +89,37 @@ class _detailProductState extends State<detailProduct> {
                                       ElevatedButton(onPressed: () {
                                           decreaseProduct();
                                       }, child: Text("-")),
-                                      DecoratedBox(
-                                        
-                                        decoration: const BoxDecoration(color: Colors.blue),
-                                        child:  Text(_countProduct.toString()),
+                                      SizedBox(width: 5,),
+                                      SizedBox(
+                                        height: 20,
+                                        width: 35,
+                                        child: DecoratedBox(                                        
+                                          decoration: const BoxDecoration(color: Colors.white60,),
+                                          child:  Center(child: Text(_countProduct.toString())),
+                                        ),
                                       ),
+                                      SizedBox(width: 5,),
                                       ElevatedButton(onPressed: () {
-                                        increaseProduct();
-                                      }, child: Text("+")),
+                                          increaseProduct();
+                                        }, child: Text("+")),
                                     ],
                                   ),
                                   const SizedBox(height: 5,),
                                   Align(
                                       alignment: Alignment.centerLeft,
-                                      child: Text("Tổng tiền: "+product.price.toString()+"đ",
+                                      child: Text("Tổng tiền: "+(product.price!*_countProduct).toString()+"đ",
                                       style:  const TextStyle(
                                         // color: Colors.red, 
                                         fontSize: 16),
                                         )
                                   ),
                                   const SizedBox(height: 5,),
-                                  ElevatedButton(onPressed: (){}, 
-                                  child: RichText(
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.green, // Background color
+                                    ),
+                                    onPressed: (){}, 
+                                    child: RichText(
                                     text: const TextSpan(
                                       children: [
                                         WidgetSpan(
@@ -183,11 +194,7 @@ class _detailProductState extends State<detailProduct> {
       ),
     );
   }
-  
-  // Widget totalProduct() {
-  //   return Text(countProduct.toString());
-  // }
-  
+  // increase Product void
   void increaseProduct() {
     setState(() {
       _countProduct++;
@@ -196,6 +203,7 @@ class _detailProductState extends State<detailProduct> {
     });
     
   }
+  //decrease Product void
   void decreaseProduct() {
     setState(() {
       _countProduct--;
