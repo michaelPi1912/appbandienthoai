@@ -1,9 +1,9 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:project_final/screen/cartPage.dart';
 import 'package:project_final/screen/homePage.dart';
 import 'package:project_final/screen/noticePage.dart';
-import 'package:project_final/screen/orderPage.dart';
 import 'package:project_final/screen/profilePage.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,10 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
 
   final pages = [
-    HomePage(),
-    OrderPage(),
-    // NoticePage(),
-    ProfilePage(),
+    const HomePage(),
+    const CartPage(),
+    const ProfilePage(),
   ];
 
   @override

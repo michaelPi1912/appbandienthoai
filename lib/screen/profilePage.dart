@@ -1,11 +1,11 @@
-// ignore_for_file: file_names, non_constant_identifier_names
+// ignore_for_file: file_names, non_constant_identifier_names, unnecessary_const
 
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_final/model/UserModel.dart';
+import 'package:project_final/variable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
     
-  
+  @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     phoneController.dispose();
@@ -73,6 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
         //Xu ly data User from body
         setState(() {
           isLogin = true;
+          token = jsonResponse['data']['accessToken'];
         });
         sharedPreferences.setString("token", jsonResponse['data']['accessToken']);
         //fetch User data
@@ -145,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                         alignment: Alignment.centerLeft,
-                        primary: Color.fromARGB(100, 22, 44, 33),
+                        primary: const Color.fromARGB(100, 22, 44, 33),
                     ),
                     icon: const Icon(Icons.history),
                     onPressed: () {
@@ -203,6 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       sharedPreferences.commit();
                       setState(() {
                         isLogin = false;
+                        // token = "";
                       });
                   },label: const Text("Log out"),),
                   ]),
@@ -224,8 +226,8 @@ class _ProfilePageState extends State<ProfilePage> {
       child: 
         Container(
         color:  Color.fromARGB(100, 22, 44, 33),
-        height: (MediaQuery.of(context).size.height - 56)/2,
-        width: MediaQuery.of(context).size.width/2,
+        height: (MediaQuery.of(context).size.height - 56)*0.6,
+        width: MediaQuery.of(context).size.width*0.6,
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -261,20 +263,76 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.green,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width*0.4,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.green,
+                  ),
+                  onPressed: () { 
+                        signIn(phoneController.text, passwordController.text);
+                    },
+                  child: const Text("Login", style: TextStyle(color: Colors.white70),),),
               ),
-              onPressed: () { 
-                    signIn(phoneController.text, passwordController.text);
-                },
-              child: const Text("Login", style: TextStyle(color: Colors.white70),),),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width*0.4,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blueAccent,
+                  ),
+                  onPressed: () { 
+                        _showAlertDialogRegister(context);
+                    },
+                  child: const Text("Register", style: TextStyle(color: Colors.white70),),),
+              ),
+            ),
           ],
           
         ),
       ),
     );
   }
+}
+
+//Dialog Register
+Future<void> _showAlertDialogRegister(BuildContext context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog( // <-- SEE HERE
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              const Text("Register"),
+              TextField(
+                
+              ),
+              TextField(),
+              TextField(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(onPressed: () {
+                  Navigator.of(context).pop();
+                }, child: const Text('Register')),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(onPressed: () {
+                  Navigator.of(context).pop();
+                }, child: const Text('Cancel')),
+              )
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
 
 User parseUser(String body) {
