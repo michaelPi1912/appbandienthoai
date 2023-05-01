@@ -1,7 +1,13 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:project_final/model/productModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+import '../variable.dart';
 
 class detailProduct extends StatefulWidget {
   const detailProduct({super.key, required this.product});
@@ -16,11 +22,20 @@ class _detailProductState extends State<detailProduct> {
 
   late Product product;
   
+  
+
   int _countProduct =0;
   @override
   void initState() {
     super.initState();
     product = widget.product;
+    getToken();
+  }
+  getToken() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      token = sharedPreferences.getString("token");
+    });
   }
 
   @override
@@ -76,6 +91,7 @@ class _detailProductState extends State<detailProduct> {
                                 children: <Widget>[
                                   const Text("ROM"),
                                   const SizedBox(height: 5,),
+                                  //lai du lieu rom tren json
                                   Row(
                                     children: [
                                       ElevatedButton(onPressed: (){}, child: Text(product.listAttributeOption![0].values![0].value.toString())),
@@ -118,7 +134,9 @@ class _detailProductState extends State<detailProduct> {
                                     style: ElevatedButton.styleFrom(
                                       primary: Colors.green, // Background color
                                     ),
-                                    onPressed: (){}, 
+                                    onPressed: (){
+                                      addProducttoCart();
+                                    }, 
                                     child: RichText(
                                     text: const TextSpan(
                                       children: [
@@ -211,6 +229,27 @@ class _detailProductState extends State<detailProduct> {
         _countProduct = 0;
     });
     
+  }
+  
+  void addProducttoCart() async{
+    Map data = {
+      "listAttribute": [
+        product.listAttributeOption![0].values![0].id
+      ],
+      "productId": product.id,
+      "quantity": _countProduct
+    };
+    Map<String,String> headers ={"content-type" : "application/json",
+                              "accept" : "*/*","Authorization": "Bearer " + token!};
+    var res = await   http.post(Uri.parse('https://phone-s.herokuapp.com/api/user/cart/insert'),
+                             body: jsonEncode(data), headers: headers);
+    var json =null;
+    if(res.statusCode == 200){
+      // json = json.decode(res.body);
+      print("add success");
+    }else{
+      print(res.body);
+    }                      
   }
 }
 

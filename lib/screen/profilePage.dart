@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, non_constant_identifier_names, unnecessary_const
+// ignore_for_file: file_names, non_constant_identifier_names
 
 import 'dart:convert';
 
@@ -24,6 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController phoneController = TextEditingController();
 
   User? _user; 
+
   @override
   void initState() {
     super.initState();
@@ -32,12 +33,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   checkLoginStatus() async{
     sharedPreferences = await SharedPreferences.getInstance();
-    if(sharedPreferences.getString("token") == null){
+    if( sharedPreferences.getString("token") == null){
       setState(() {
         isLogin = false;
       });
     }else{
       setState(() {
+        token = sharedPreferences.getString("token");
         isLogin = true;
       });
     }
@@ -72,8 +74,8 @@ class _ProfilePageState extends State<ProfilePage> {
       if(jsonResponse != null) {
         //Xu ly data User from body
         setState(() {
-          isLogin = true;
           token = jsonResponse['data']['accessToken'];
+          isLogin = true;
         });
         sharedPreferences.setString("token", jsonResponse['data']['accessToken']);
         //fetch User data
@@ -127,7 +129,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       radius: 120,
                     ),
                   ),
-                  Text(_user!.email.toString()),
+                  //Logic Sai!!!
+                  // Text(_user!.email.toString()),
+                  // Text(token??"not token"),
                   //Info
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(

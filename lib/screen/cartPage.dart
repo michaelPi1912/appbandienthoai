@@ -3,6 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:project_final/network/networkApi.dart';
+import 'package:project_final/variable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../model/cartModel.dart';
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
 
@@ -12,16 +16,53 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
 
+  late Future<List<Cart>> _futureCart;
+
+  @override
+  void initState() {
+    getToken(); 
+    super.initState();
+  }
+
+  getToken() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      token = sharedPreferences.getString("token");
+      _futureCart = fetchCart(token!);
+    });
+  }
+  
   //check dang nhap, xu ly lai logic
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: <Widget>[
+          // Text(token??"aaa"),
           Expanded(
-            child: 
-              FutureBuilder(
-                future: fetchCart(),
+            child:
+              // Check token
+              token != null ? listCartBuilder()
+              : const Text("Ban chua dang nhap") 
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(onPressed: () {},
+                child: const Text("Thanh Toán")),
+              ),
+            )
+          )
+        ],
+      )
+    );
+  }
+
+  FutureBuilder listCartBuilder(){
+    return FutureBuilder(
+                future: _futureCart,
                 builder: (context, snapshot){
                   if(snapshot.hasData){
                     return ListView.builder(
@@ -32,7 +73,27 @@ class _CartPageState extends State<CartPage> {
                         return Card(
                           child: Row(
                             children: [
-                              Text(snapshot.data![index].name.toString())
+                              Row(
+                                children: [
+                                  Image.network(
+                                    snapshot.data![index].image.toString(), 
+                                    width: MediaQuery.of(context).size.width/2,
+                                    height: MediaQuery.of(context).size.height/6,
+                                  ),
+                                  Column(
+                                    children: [
+                                      SizedBox(
+                                        width: 100,
+                                        child: Text(snapshot.data![index].name.toString())),
+                                      
+                                    ],
+                                  ),
+                                  ElevatedButton(onPressed: (){
+                                    deleteCart(snapshot.data![index].id);
+                                  }, child: Text("x"))
+                                ],
+                              )
+                              
                             ]),
                         );
                       },
@@ -41,19 +102,19 @@ class _CartPageState extends State<CartPage> {
                     return Text("${snapshot.error}");
                   }
                   return const CircularProgressIndicator();
-              })
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(onPressed: () {},
-                child: const Text("Thanh Toán")),
-              ),
-            ))
-        ],
-      )
-    );
+              });
+  }
+  
+  deleteCart(String id) async {
+    Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + token!};
+    var jsonResponse = null;
+    var response = await http.delete(Uri.parse('https://phone-s.herokuapp.com/api/user/cart/delete/'+id), headers: headers);
+    if(response.statusCode == 200) {
+      setState(() {
+        _futureCart = fetchCart(token!);
+      });
+    }
+      
   }
 }

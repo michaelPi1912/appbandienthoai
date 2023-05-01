@@ -5,6 +5,7 @@ import 'package:project_final/model/cartModel.dart';
 import 'package:project_final/model/productModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_final/variable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 List<Product> parseProduct(String resBody) {
   final Map<String, dynamic> jsonMap = jsonDecode(resBody);
@@ -50,17 +51,13 @@ List<Cart> parseCart(String resBody) {
     if (cart.name != null) {
       cart.name = utf8.decode(cart.name!.codeUnits);
     }
-    // if (product.description != null) {
-    //   product.description = utf8.decode(product.description!.codeUnits);
-    // }
   });
-
   return cartList;
 }
 // my url is https://phone-s.herokuapp.com/api/user/cart
-Future<List<Cart>> fetchCart() async {
+Future<List<Cart>> fetchCart(String tokenAccess) async {
   Map<String,String> headers ={"content-type" : "application/json",
-                                "accept" : "*/*","Authorization": "Bearer" + token};
+                                "accept" : "*/*","Authorization": "Bearer " + tokenAccess};
   final res = await http
       .get(Uri.parse('https://phone-s.herokuapp.com/api/user/cart'),
       headers: headers);
