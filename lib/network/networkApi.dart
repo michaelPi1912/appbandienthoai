@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:project_final/model/UserModel.dart';
 import 'package:project_final/model/cartModel.dart';
 import 'package:project_final/model/productModel.dart';
 import 'package:http/http.dart' as http;
@@ -63,6 +64,36 @@ Future<List<Cart>> fetchCart(String tokenAccess) async {
       headers: headers);
   if (res.statusCode == 200) {
     return compute(parseCart, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+
+//Adress
+List<Address> parseAdress(String resBody) {
+  final Map<String, dynamic> jsonMap = jsonDecode(resBody);
+  final List<dynamic> addressListJson = jsonMap['data']['addressList'];
+  List<Address> addressList = addressListJson
+      .map((cartJson) => Address.fromJson(cartJson))
+      .toList();
+
+  // Decode Unicode to UTF-8
+  // cartList.forEach((cart) {
+  //   if (cart.name != null) {
+  //     cart.name = utf8.decode(cart.name!.codeUnits);
+  //   }
+  // });
+  return addressList;
+}
+// my url is https://phone-s.herokuapp.com/api/user/cart
+Future<List<Address>> fetchAddress(String tokenAccess) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + tokenAccess};
+  final res = await http
+      .get(Uri.parse('https://phone-s.herokuapp.com/api/user/address'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseAdress, res.body);
   } else {
     throw Exception('Request API error');
   }

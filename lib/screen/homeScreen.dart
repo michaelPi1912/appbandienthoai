@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack( 
         index: currentIndex,
         children: pages,),
-      bottomNavigationBar: BottomNavigationBar(
+        bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) =>setState(() => currentIndex=index),
         backgroundColor: Colors.amber,

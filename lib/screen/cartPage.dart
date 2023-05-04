@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:project_final/network/networkApi.dart';
+import 'package:project_final/screen/orderPage.dart';
 import 'package:project_final/variable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -15,21 +16,41 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-
+  List<String> listCart = [];
+  late List<Cart> listProduct;
+  int total = 0;
   late Future<List<Cart>> _futureCart;
-
+  String? name;
   @override
   void initState() {
     getToken(); 
     super.initState();
   }
 
+  void changeData(){
+    setState(() {
+      _futureCart = fetchCart(token!);
+      
+    });
+  }
+  void getData(){
+    _futureCart.then((value) => {
+      value.forEach((element) {
+        listCart.add(element.id.toString());
+        // listCart.add('"${element.id}"');
+        total += (element.price!*element.quantity!);
+      }),
+      listProduct = value
+    });
+  }
   getToken() async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    setState(() {
+    if(sharedPreferences.getString("token") != null){
+      setState(() {
       token = sharedPreferences.getString("token");
       _futureCart = fetchCart(token!);
     });
+    }
   }
   
   //check dang nhap, xu ly lai logic
@@ -50,8 +71,27 @@ class _CartPageState extends State<CartPage> {
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(onPressed: () {},
-                child: const Text("Thanh Toán")),
+                child: ElevatedButton(onPressed: () async {
+                  if(token !=null){
+                    getData();
+                    
+                    String order = await Navigator.push(context, MaterialPageRoute(builder: (context)
+                                      => OrderPage(listCart: listCart, listProduct: listProduct,total: total,)));
+                    if(order == "success"){
+                      setState(() {
+                        _futureCart =fetchCart(token!);
+                      });
+                    }
+                    if(order =="back"){
+                      setState(() {
+                        listCart = [];
+                        listProduct =[];
+                        total =0;
+                      });
+                    }
+                  }
+                },
+                child: const Text("Mua Hàng")),
               ),
             )
           )

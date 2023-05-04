@@ -24,7 +24,7 @@ class _detailProductState extends State<detailProduct> {
   
   
 
-  int _countProduct =0;
+  int _countProduct = 1;
   @override
   void initState() {
     super.initState();
@@ -95,8 +95,8 @@ class _detailProductState extends State<detailProduct> {
                                   Row(
                                     children: [
                                       ElevatedButton(onPressed: (){}, child: Text(product.listAttributeOption![0].values![0].value.toString())),
-                                      const SizedBox(width: 10,),
-                                      ElevatedButton(onPressed: (){}, child: Text(product.listAttributeOption![0].values![1].value.toString())),
+                                      // const SizedBox(width: 10,),
+                                      // ElevatedButton(onPressed: (){}, child: Text(product.listAttributeOption![0].values![1].value.toString())),
                                     ],
                                   ),
                                   const SizedBox(height: 5,),
@@ -135,7 +135,11 @@ class _detailProductState extends State<detailProduct> {
                                       primary: Colors.green, // Background color
                                     ),
                                     onPressed: (){
-                                      addProducttoCart();
+                                      if(token !=null){
+                                        addProducttoCart();
+                                      }else{
+                                        print("add failse");
+                                      }
                                     }, 
                                     child: RichText(
                                     text: const TextSpan(
@@ -225,8 +229,8 @@ class _detailProductState extends State<detailProduct> {
   void decreaseProduct() {
     setState(() {
       _countProduct--;
-      if(_countProduct < 0)
-        _countProduct = 0;
+      if(_countProduct < 1)
+        _countProduct = 1;
     });
     
   }
