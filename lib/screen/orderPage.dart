@@ -33,17 +33,10 @@ class _OrderPageState extends State<OrderPage> {
     listCart = widget.listCart;
     listProduct = widget.listProduct;
     total = widget.total;
-    // getCartId();
-    print(listCart);
     getAddress();
     getIdAddress();
     super.initState();
   }
-  // void getCartId(){
-  //   listProduct.forEach((element) {
-  //     listCart.add('"${element.id}"');
-  //   });
-  // }
   void getAddress(){
     _futureAddress = fetchAddress(token!);
   }

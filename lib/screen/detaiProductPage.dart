@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:project_final/model/productModel.dart';
+import 'package:project_final/screen/cartPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -41,12 +42,20 @@ class _detailProductState extends State<detailProduct> {
   @override
   Widget build(BuildContext context) {
     
+    bool IsAdd = false;
     
     return Scaffold(
       appBar: AppBar(),
       backgroundColor: Color.fromARGB(255, 243, 243, 243),
       body: ListView(
         children: <Widget>[ 
+          // IconButton(onPressed: (){
+          //   if(IsAdd){
+          //     Navigator.pop(context, "refresh");
+          //   }else{
+          //     Navigator.pop(context, "aaa");
+          //   }
+          // }, icon: Icon(Icons.arrow_back, color: Colors.black,)),
           Padding(
             padding: const EdgeInsets.only(left: 20.0, top: 20.0, right: 20, bottom: 5.0),
             child: Container(
@@ -137,6 +146,7 @@ class _detailProductState extends State<detailProduct> {
                                     onPressed: (){
                                       if(token !=null){
                                         addProducttoCart();
+                                        IsAdd = true;
                                       }else{
                                         print("add failse");
                                       }

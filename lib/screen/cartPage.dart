@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:project_final/network/networkApi.dart';
+import 'package:project_final/screen/detaiProductPage.dart';
+import 'package:project_final/screen/homePage.dart';
 import 'package:project_final/screen/orderPage.dart';
 import 'package:project_final/variable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,18 +23,20 @@ class _CartPageState extends State<CartPage> {
   int total = 0;
   late Future<List<Cart>> _futureCart;
   String? name;
+
   @override
   void initState() {
     getToken(); 
     super.initState();
   }
 
-  void changeData(){
+  changeData(){
     setState(() {
       _futureCart = fetchCart(token!);
       
     });
   }
+
   void getData(){
     _futureCart.then((value) => {
       value.forEach((element) {
@@ -59,6 +63,13 @@ class _CartPageState extends State<CartPage> {
     return Scaffold(
       body: Column(
         children: <Widget>[
+          IconButton(onPressed: (){
+            if(token!=null){
+              setState(() {
+                _futureCart = fetchCart(token!);
+              });
+            }
+          }, icon: Icon(Icons.refresh, color: Colors.black,)),
           // Text(token??"aaa"),
           Expanded(
             child:
@@ -74,21 +85,7 @@ class _CartPageState extends State<CartPage> {
                 child: ElevatedButton(onPressed: () async {
                   if(token !=null){
                     getData();
-                    
-                    String order = await Navigator.push(context, MaterialPageRoute(builder: (context)
-                                      => OrderPage(listCart: listCart, listProduct: listProduct,total: total,)));
-                    if(order == "success"){
-                      setState(() {
-                        _futureCart =fetchCart(token!);
-                      });
-                    }
-                    if(order =="back"){
-                      setState(() {
-                        listCart = [];
-                        listProduct =[];
-                        total =0;
-                      });
-                    }
+                    chooseAllCart();
                   }
                 },
                 child: const Text("Mua Hàng")),
@@ -156,5 +153,30 @@ class _CartPageState extends State<CartPage> {
       });
     }
       
+  }
+
+  chooseAllCart() async {
+    Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + token!};
+
+    var response = await http.put(Uri.parse('https://phone-s.herokuapp.com/api/user/cart/choose/all?status=true'), headers: headers);
+    if(response.statusCode == 200){
+      String order = await Navigator.push(context, MaterialPageRoute(builder: (context)
+                                      => OrderPage(listCart: listCart, listProduct: listProduct,total: total,)));
+      if(order == "success"){
+        setState(() {
+          _futureCart =fetchCart(token!);
+        });
+      }
+      if(order =="back"){
+        setState(() {
+          listCart = [];
+          listProduct =[];
+          total =0;
+        });
+      }
+    }else{
+      print(response.body);
+    }
   }
 }
