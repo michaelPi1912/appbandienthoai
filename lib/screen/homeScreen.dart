@@ -15,55 +15,47 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late List<Widget> _pages;
   int currentIndex = 0;
-  late List<BottomNavigationBarItem> _items;
-  late BottomNavigationBar bottomNavigationBar;
 
-
-  _updatePages(){
-    _pages = [
-      const HomePage(),
-      const CartPage(),
-      const ProfilePage(),
-    ];
-    _items = <BottomNavigationBarItem>[
-      const BottomNavigationBarItem(
-      icon: Icon(Icons.home),
-      label: 'Home',
-      backgroundColor: Colors.white,
-      ),
-      const BottomNavigationBarItem(
-      icon: Icon(Icons.add_shopping_cart),
-      label: 'Cart',
-      backgroundColor: Colors.white,
-      ),
-      const BottomNavigationBarItem(
-      icon: Icon(Icons.account_circle),
-      label: 'Profile',
-      backgroundColor: Colors.white,
-      ),
-    ];
-    bottomNavigationBar = BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: (index) =>setState(() => currentIndex=index),
-      backgroundColor: Colors.amber,
-      items: _items);
-    assert(_pages.length == _items.length);
-  }
-  @override
-  void initState() {
-    _updatePages();
-    super.initState();
-  }
+  final pages = [
+    HomePage(),
+    CartPage(),
+    // NoticePage(),
+    ProfilePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack( 
         index: currentIndex,
-        children: _pages,),
-        bottomNavigationBar: bottomNavigationBar
+        children: pages,),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (index) =>setState(() => currentIndex=index),
+        backgroundColor: Colors.amber,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+            backgroundColor: Colors.white,
+            ),
+            BottomNavigationBarItem(
+            icon: Icon(Icons.add_shopping_cart),
+            label: 'Cart',
+            backgroundColor: Colors.white,
+            ),
+            // BottomNavigationBarItem(
+            // icon: Icon(Icons.circle_notifications),
+            // label: 'Home',
+            // backgroundColor: Colors.blueAccent,
+            // ),
+            BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Profile',
+            backgroundColor: Colors.white,
+            ),
+        ]),
     );
   }
 }
