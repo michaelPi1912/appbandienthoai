@@ -1,12 +1,13 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:project_final/model/UserModel.dart';
 import 'package:project_final/model/cartModel.dart';
+import 'package:project_final/model/oderModel.dart';
 import 'package:project_final/model/productModel.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_final/variable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../model/UserModel.dart';
+import '../model/addressModel.dart';
 
 List<Product> parseProduct(String resBody) {
   final Map<String, dynamic> jsonMap = jsonDecode(resBody);
@@ -94,6 +95,141 @@ Future<List<Address>> fetchAddress(String tokenAccess) async {
       headers: headers);
   if (res.statusCode == 200) {
     return compute(parseAdress, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+
+
+//Order Processing
+List<Order> parsePOder(String resBody) {
+  final Map<String, dynamic> jsonMap = jsonDecode(resBody);
+  final List<dynamic> orderListJson = jsonMap['data']['listOrder'];
+  List<Order> orderList = orderListJson
+      .map((orderJson) => Order.fromJson(orderJson))
+      .toList();
+  List<Order> orderPList =[];
+  orderList.forEach((element) {
+    if(element.orderStatus == 0){
+      orderPList.add(element);
+    }
+  });
+  return orderPList;
+}
+// my url is https://phone-s.herokuapp.com/api/user/order
+Future<List<Order>> fetchPOder(String tokenAccess) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + tokenAccess};
+  final res = await http
+      .get(Uri.parse('https://phone-s.herokuapp.com/api/user/order'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parsePOder, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+//Order Delivery
+List<Order> parseDOder(String resBody) {
+  final Map<String, dynamic> jsonMap = jsonDecode(resBody);
+  final List<dynamic> orderListJson = jsonMap['data']['listOrder'];
+  List<Order> orderList = orderListJson
+      .map((orderJson) => Order.fromJson(orderJson))
+      .toList();
+  List<Order> orderPList =[];
+  orderList.forEach((element) {
+    if(element.orderStatus == 1){
+      orderPList.add(element);
+    }
+  });
+  return orderPList;
+}
+// my url is https://phone-s.herokuapp.com/api/user/order
+Future<List<Order>> fetchDOder(String tokenAccess) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + tokenAccess};
+  final res = await http
+      .get(Uri.parse('https://phone-s.herokuapp.com/api/user/order'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseDOder, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+//Order Success
+List<Order> parseSOder(String resBody) {
+  final Map<String, dynamic> jsonMap = jsonDecode(resBody);
+  final List<dynamic> orderListJson = jsonMap['data']['listOrder'];
+  List<Order> orderList = orderListJson
+      .map((orderJson) => Order.fromJson(orderJson))
+      .toList();
+  List<Order> orderPList =[];
+  orderList.forEach((element) {
+    if(element.orderStatus == 2){
+      orderPList.add(element);
+    }
+  });
+  return orderPList;
+}
+// my url is https://phone-s.herokuapp.com/api/user/order
+Future<List<Order>> fetchSOder(String tokenAccess) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + tokenAccess};
+  final res = await http
+      .get(Uri.parse('https://phone-s.herokuapp.com/api/user/order'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseSOder, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+//Cancel Order
+List<Order> parseCOder(String resBody) {
+  final Map<String, dynamic> jsonMap = jsonDecode(resBody);
+  final List<dynamic> orderListJson = jsonMap['data']['listOrder'];
+  List<Order> orderList = orderListJson
+      .map((orderJson) => Order.fromJson(orderJson))
+      .toList();
+  List<Order> orderPList =[];
+  orderList.forEach((element) {
+    if(element.orderStatus == 3){
+      orderPList.add(element);
+    }
+  });
+  return orderPList;
+}
+// my url is https://phone-s.herokuapp.com/api/user/order
+Future<List<Order>> fetchCOder(String tokenAccess) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + tokenAccess};
+  final res = await http
+      .get(Uri.parse('https://phone-s.herokuapp.com/api/user/order'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseCOder, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+
+//Get User
+
+User parseUser(String body) {
+  final Map<String, dynamic> jsonMap = jsonDecode(body);
+  User user = User.fromJson(jsonMap["data"]["user"]);
+  return user;
+}
+// my url is https://phone-s.herokuapp.com/api/user/profile
+Future<User> fetchUser(String tokenAccess) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + tokenAccess};
+  final res = await http
+      .get(Uri.parse('https://phone-s.herokuapp.com/api/user/profile'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseUser, res.body);
   } else {
     throw Exception('Request API error');
   }

@@ -48,141 +48,193 @@ class _detailProductState extends State<detailProduct> {
       appBar: AppBar(),
       backgroundColor: Color.fromARGB(255, 243, 243, 243),
       body: ListView(
-        children: <Widget>[ 
-          // IconButton(onPressed: (){
-          //   if(IsAdd){
-          //     Navigator.pop(context, "refresh");
-          //   }else{
-          //     Navigator.pop(context, "aaa");
-          //   }
-          // }, icon: Icon(Icons.arrow_back, color: Colors.black,)),
+        children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(left: 20.0, top: 20.0, right: 20, bottom: 5.0),
+            padding: const EdgeInsets.only(
+                left: 20.0, top: 20.0, right: 20, bottom: 5.0),
             child: Container(
               decoration: const BoxDecoration(
-                color: Colors.white
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 5,
+                    spreadRadius: 1,
+                  ),
+                ],
               ),
-              child: Column(   
+              child: Column(
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      product.name.toString(), 
+                      product.name.toString(),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                      ),),
+                      ),
+                    ),
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                       Padding(
-                         padding: const EdgeInsets.all(4.0),
-                         child: Column(
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Column(
+                          children: <Widget>[
+                            Image.network(
+                              product.img!.isNotEmpty
+                                  ? product.img![0].toString()
+                                  : product.image.toString(),
+                              width: MediaQuery.of(context).size.width * 0.4,
+                              height: 250,
+                              fit: BoxFit.cover,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              //Image.network(product.image.toString(), width: 250,height: 250,),
-                              Image.network(product.img!.isNotEmpty ? product.img![0].toString(): product.image.toString(), width: MediaQuery.of(context).size.width*0.4,
-                              height: 250,)
-                            ],
-                          ),
-                       ),
-                       Container(
-                        decoration: BoxDecoration(
-                          // color: Colors.amber
-                          ),
-                         child: SizedBox(
-                            height: 250,
-                            width: MediaQuery.of(context).size.width*0.45,
-                           child: Padding(
-                             padding: const EdgeInsets.all(8.0),
-                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  const Text("ROM"),
-                                  const SizedBox(height: 5,),
-                                  //lai du lieu rom tren json
-                                  Row(
-                                    children: [
-                                      ElevatedButton(onPressed: (){}, child: Text(product.listAttributeOption![0].values![0].value.toString())),
-                                      // const SizedBox(width: 10,),
-                                      // ElevatedButton(onPressed: (){}, child: Text(product.listAttributeOption![0].values![1].value.toString())),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5,),
-                                  Row(
-                                    children: [
-                                      ElevatedButton(onPressed: () {
-                                          decreaseProduct();
-                                      }, child: Text("-")),
-                                      SizedBox(width: 5,),
-                                      SizedBox(
-                                        height: 20,
-                                        width: 35,
-                                        child: DecoratedBox(                                        
-                                          decoration: const BoxDecoration(color: Colors.white60,),
-                                          child:  Center(child: Text(_countProduct.toString())),
-                                        ),
-                                      ),
-                                      SizedBox(width: 5,),
-                                      ElevatedButton(onPressed: () {
-                                          increaseProduct();
-                                        }, child: Text("+")),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5,),
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text("Tổng tiền: "+(product.price!*_countProduct).toString()+"đ",
-                                      style:  const TextStyle(
-                                        // color: Colors.red, 
-                                        fontSize: 16),
-                                        )
-                                  ),
-                                  const SizedBox(height: 5,),
+                              const Text(
+                                "ROM",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Row(
+                                children: [
                                   ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.green, // Background color
+                                    onPressed: () {},
+                                    child: Text(
+                                      product.listAttributeOption![0].values![0]
+                                          .value
+                                          .toString(),
                                     ),
-                                    onPressed: (){
-                                      if(token !=null){
-                                        addProducttoCart();
-                                        IsAdd = true;
-                                      }else{
-                                        print("add failse");
-                                      }
-                                    }, 
-                                    child: RichText(
-                                    text: const TextSpan(
-                                      children: [
-                                        WidgetSpan(
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 2.0),
-                                            child: Icon(Icons.shopping_basket),
-                                          ),
-                                        ),
-                                        TextSpan(text: 'Thêm vào giỏ hàng'),
-                                      ],
-                                    ),
-                                  )),
-                                  const SizedBox(height: 5,),
-                                  ElevatedButton(onPressed: (){}, 
-                                  child: RichText(
-                                    text: const TextSpan(
-                                      children: [
-                                        WidgetSpan(
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 2.0),
-                                            child: Icon(Icons.favorite),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ))     
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  // ElevatedButton(
+                                  //   onPressed: () {},
+                                  //   child: Text(
+                                  //     product.listAttributeOption![0].values![1]
+                                  //         .value
+                                  //         .toString(),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
-                           ),
-                         ),
-                       ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      decreaseProduct();
+                                    },
+                                    child: const Icon(Icons.remove),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.grey[200],
+                                      padding: EdgeInsets.all(8),
+                                      shape: CircleBorder(),
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    _countProduct.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      increaseProduct();
+                                    },
+                                    child: const Icon(Icons.add),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.grey[200],
+                                      padding: EdgeInsets.all(8),
+                                      shape: CircleBorder(),
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "Tổng tiền: " +
+                                      (product.price! * _countProduct)
+                                          .toString() +
+                                      "đ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                children: [
+                                  // ElevatedButton(
+                                  //   onPressed: () {},
+                                  //   child: const Text("Mua Ngay"),
+                                  //   style: ElevatedButton.styleFrom(
+                                  //     primary: Colors.red,
+                                  //     padding: EdgeInsets.symmetric(
+                                  //         horizontal: 30, vertical: 10),
+                                  //     shape: RoundedRectangleBorder(
+                                  //       borderRadius: BorderRadius.circular(10),
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // const SizedBox(
+                                  //   width: 10,
+                                  // ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if(token!=null){
+                                        addProducttoCart();
+                                      }
+                                    },
+                                    child: const Text("Thêm Vào Giỏ"),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.red,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 30, vertical: 10),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -190,34 +242,71 @@ class _detailProductState extends State<detailProduct> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 20.0, top: 5.0, bottom: 5.0, right: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: Offset(0, 3), // changes position of shadow
+                  ),
+                ],
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Mô Tả Sản Phẩm", 
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Mô Tả Sản Phẩm",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                      ),),
+                      ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: Text(product.description.toString(),
+                    child: Text(
+                      product.description.toString(),
                       style: TextStyle(
-                        fontSize: 14
+                        fontSize: 16,
+                        color: Colors.grey[600],
                       ),
-                      )),
+                    ),
                   ),
+                  SizedBox(height: 10.0),
+                  Divider(thickness: 1.0),
+                  SizedBox(height: 10.0),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Price: ",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "\$${product.price.toString()}",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
                 ],
               ),
             ),

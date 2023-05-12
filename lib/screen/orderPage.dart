@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:project_final/model/UserModel.dart';
 import 'package:project_final/network/networkApi.dart';
 import 'package:http/http.dart' as http;
 
+import '../model/addressModel.dart';
 import '../model/cartModel.dart';
 import '../variable.dart';
 
@@ -13,7 +13,7 @@ class OrderPage extends StatefulWidget {
 
   final List<Cart> listProduct;
   final List<String> listCart;
-  final int total;
+  final double total;
 
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -23,7 +23,7 @@ class _OrderPageState extends State<OrderPage> {
 
   late List<Cart> listProduct;
   late List<String> listCart;
-  late int total;
+  late double total;
   late String address;
   late Future<List<Address>> _futureAddress;
   late String idAddress;
@@ -72,10 +72,15 @@ class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context,"aaaa"),
+        ),
+      ),
       body: Column(
         children: [
-          ElevatedButton(onPressed:() => Navigator.pop(context, "back"), child: const Text("back")),
+          Text(listProduct[0].name.toString()),
           ElevatedButton(onPressed: () {
           Order();
         }, child: const Text("Thanh toan khi giao hang")),

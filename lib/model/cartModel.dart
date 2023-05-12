@@ -8,7 +8,7 @@ class Cart {
   String? name;
   String? image;
   String? productId;
-  int? price;
+  double? price;
   int? quantity;
 
   Cart(

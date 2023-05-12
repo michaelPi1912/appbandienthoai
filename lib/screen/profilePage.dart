@@ -4,7 +4,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_final/model/UserModel.dart';
+import 'package:project_final/network/networkApi.dart';
+import 'package:project_final/screen/historyPage.dart';
+import 'package:project_final/screen/inforPage.dart';
 import 'package:project_final/variable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,11 +21,10 @@ class _ProfilePageState extends State<ProfilePage> {
   
   late SharedPreferences sharedPreferences;
   bool isLogin = false;
+
   //anh xa textfield
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-
-  User? _user; 
 
   @override
   void initState() {
@@ -78,8 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
           isLogin = true;
         });
         sharedPreferences.setString("token", jsonResponse['data']['accessToken']);
-        //fetch User data
-        _user = parseUser(response.body);
+        
       }
     }
     else {
@@ -119,184 +119,226 @@ class _ProfilePageState extends State<ProfilePage> {
           ),),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children:[
-                  //Avatar
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage('https://i.pinimg.com/736x/d0/0c/5a/d00c5aac0b36935bdb01d05aea3da010.jpg'),
-                      radius: 120,
-                    ),
-                  ),
-                  //Logic Sai!!!
-                  // Text(_user!.email.toString()),
-                  // Text(token??"not token"),
-                  //Info
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        alignment: Alignment.centerLeft,
-                        primary: Color.fromARGB(100, 22, 44, 33),
-                    ),
-                    icon: const Icon(Icons.person),
-                    onPressed: () {
-                    setState(() {
-                      isLogin = false;
-                    });
-                  },label: const Text("Thông tin tài khoản"),),
-                  //History
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        alignment: Alignment.centerLeft,
-                        primary: const Color.fromARGB(100, 22, 44, 33),
-                    ),
-                    icon: const Icon(Icons.history),
-                    onPressed: () {
-                    setState(() {
-                      isLogin = false;
-                    });
-                  },label: const Text("Lịch sử mua hàng"),),
-                  //Notice
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        alignment: Alignment.centerLeft,
-                        primary: Color.fromARGB(100, 22, 44, 33),
-                    ),
-                    icon: const Icon(Icons.notifications),
-                    onPressed: () {
-                    setState(() {
-                      isLogin = false;
-                    });
-                  },label: const Text("Thông báo"),),
-                  // Favorite Product
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        alignment: Alignment.centerLeft,
-                        primary: Color.fromARGB(100, 22, 44, 33),
-                    ),
-                    icon: const Icon(Icons.favorite),
-                    onPressed: () {
-                    setState(() {
-                      isLogin = false;
-                    });
-                  },label: const Text("Sản phẩm yêu thích"),),
-                  // Discount
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        alignment: Alignment.centerLeft,
-                        primary: Color.fromARGB(100, 22, 44, 33),
-                    ),
-                    icon: const Icon(Icons.discount),
-                    onPressed: () {
-                    
-                  },label: const Text("Ưu đãi của bạn"),),
-                  //Logout
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        alignment: Alignment.centerLeft,
-                        primary: Color.fromARGB(100, 22, 44, 33),
-                    ),
-                    icon: const Icon(Icons.exit_to_app),
-                    onPressed: () {
-                      sharedPreferences.clear;
-                      sharedPreferences.commit();
-                      setState(() {
-                        isLogin = false;
-                        // token = "";
-                      });
-                  },label: const Text("Log out"),),
-                  ]),
+        child: FutureBuilder(
+          future: fetchUser(token!),
+          builder: (context, snapshot){
+            if (snapshot.hasData) {
+                    return Column(
+                      children:[
+                        //Avatar
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(snapshot.data!.img.toString()),
+                            radius: 100,
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50),
+                              alignment: Alignment.centerLeft,
+                              primary: Color.fromARGB(100, 22, 44, 33),
+                          ),
+                          icon: const Icon(Icons.person),
+                          onPressed: () {
+                          setState(() {
+                            Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => InforPage()));
+                          });
+                        },label: const Text("Thông tin tài khoản"),),
+                        //History
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50),
+                              alignment: Alignment.centerLeft,
+                              primary: const Color.fromARGB(100, 22, 44, 33),
+                          ),
+                          icon: const Icon(Icons.history),
+                          onPressed: () {
+                              Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const HistoryPage()));
+                        },label: const Text("Lịch sử mua hàng"),),
+                        //Notice
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50),
+                              alignment: Alignment.centerLeft,
+                              primary: Color.fromARGB(100, 22, 44, 33),
+                          ),
+                          icon: const Icon(Icons.notifications),
+                          onPressed: () {
+                          setState(() {
+                            isLogin = false;
+                          });
+                        },label: const Text("Thông báo"),),
+                        // Favorite Product
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50),
+                              alignment: Alignment.centerLeft,
+                              primary: Color.fromARGB(100, 22, 44, 33),
+                          ),
+                          icon: const Icon(Icons.favorite),
+                          onPressed: () {
+                          setState(() {
+                            isLogin = false;
+                          });
+                        },label: const Text("Sản phẩm yêu thích"),),
+                        // Discount
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50),
+                              alignment: Alignment.centerLeft,
+                              primary: Color.fromARGB(100, 22, 44, 33),
+                          ),
+                          icon: const Icon(Icons.discount),
+                          onPressed: () {
+                          
+                        },label: const Text("Ưu đãi của bạn"),),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50),
+                              alignment: Alignment.centerLeft,
+                              primary: Color.fromARGB(100, 22, 44, 33),
+                          ),
+                          icon: const Icon(Icons.password),
+                          onPressed: () {
+                          
+                        },label: const Text("Đổi Mật Khẩu"),),
+                        //Logout
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50),
+                              alignment: Alignment.centerLeft,
+                              primary: Color.fromARGB(100, 22, 44, 33),
+                          ),
+                          icon: const Icon(Icons.exit_to_app),
+                          onPressed: () {
+                            sharedPreferences.clear;
+                            sharedPreferences.commit();
+                            setState(() {
+                              isLogin = false;
+                              // token = "";
+                            });
+                        },label: const Text("Log out"),),
+                        ]);
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+            
+          }
+          
+        ),
       ),
     );
   }
   //isLogin == false
   Widget LoginForm() {
     return Container(
-      // margin: EdgeInsets.only(top: MediaQuery.of(context).size.height/100),
-      alignment: Alignment.center,
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage("https://wallpaperaccess.com/full/1838440.jpg"),
-            fit: BoxFit.cover,
-          ),),
-      child: 
-        Container(
-        color:  Color.fromARGB(100, 22, 44, 33),
-        height: (MediaQuery.of(context).size.height - 56)*0.6,
-        width: MediaQuery.of(context).size.width*0.6,
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text("Log In" ,
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white70),
-                      ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: TextField(
-                controller: phoneController,
-                decoration: InputDecoration(
-                  hintText: "Phone Number",
-                  hintStyle: TextStyle(color: Colors.white70),
-                  prefixIcon: const Icon(Icons.person),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Password",
-                  hintStyle: TextStyle(color: Colors.white70),
-                  prefixIcon: const Icon(Icons.lock),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width*0.4,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
-                  ),
-                  onPressed: () { 
-                        signIn(phoneController.text, passwordController.text);
-                    },
-                  child: const Text("Login", style: TextStyle(color: Colors.white70),),),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width*0.4,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blueAccent,
-                  ),
-                  onPressed: () { 
-                        _showAlertDialogRegister(context);
-                    },
-                  child: const Text("Register", style: TextStyle(color: Colors.white70),),),
-              ),
-            ),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color.fromRGBO(13, 71, 161, 1),
+            Color.fromRGBO(21, 101, 192, 1),
+            Color.fromRGBO(25, 118, 210, 1),
+            Color.fromRGBO(30, 136, 229, 1),
           ],
-          
+        ),
+      ),
+      child: Center(
+        child: Card(
+          elevation: 8.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Log In",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                TextField(
+                  controller: phoneController,
+                  decoration: InputDecoration(
+                    hintText: "Phone Number",
+                    prefixIcon: const Icon(Icons.person),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    prefixIcon: const Icon(Icons.lock),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width*0.2,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      signIn(phoneController.text, passwordController.text);
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        "Login",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width*0.2,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.indigo,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      _showAlertDialogRegister(context);
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        "Register",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -339,11 +381,6 @@ Future<void> _showAlertDialogRegister(BuildContext context) async {
   );
 }
 
-User parseUser(String body) {
-  final Map<String, dynamic> jsonMap = jsonDecode(body);
-  User user = User.fromJson(jsonMap["data"]["user"]);
-  return user;
-}
 
  
  

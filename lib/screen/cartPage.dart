@@ -20,7 +20,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   List<String> listCart = [];
   late List<Cart> listProduct;
-  int total = 0;
+  double total = 0;
   late Future<List<Cart>> _futureCart;
   String? name;
 
