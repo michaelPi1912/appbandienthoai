@@ -234,3 +234,19 @@ Future<User> fetchUser(String tokenAccess) async {
     throw Exception('Request API error');
   }
 }
+
+//WishList
+
+// my url is https://phone-s.herokuapp.com/api/user/profile
+Future<List<Product>> fetchWishList(String tokenAccess) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*","Authorization": "Bearer " + tokenAccess};
+  final res = await http
+      .get(Uri.parse('https://phone-s.herokuapp.com/api/user/wishlist'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseProduct, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}

@@ -33,7 +33,6 @@ class _CartPageState extends State<CartPage> {
   changeData(){
     setState(() {
       _futureCart = fetchCart(token!);
-      
     });
   }
 

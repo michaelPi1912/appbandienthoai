@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:project_final/network/networkApi.dart';
+import 'package:project_final/screen/detailOrder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/oderModel.dart';
@@ -15,6 +16,11 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
+
+  late Future<List<Order>> _listPOrder;
+  late Future<List<Order>> _listDOrder;
+  late Future<List<Order>> _listSOrder;
+  late Future<List<Order>> _listCOrder;
   
   @override
   void initState() {
@@ -26,6 +32,12 @@ class _HistoryPageState extends State<HistoryPage> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if(sharedPreferences.getString("token") !=null){
       token = sharedPreferences.getString("token");
+      setState(() {
+        _listPOrder = fetchPOder(token!);
+        _listDOrder = fetchDOder(token!); 
+        _listSOrder = fetchSOder(token!);
+        _listCOrder = fetchCOder(token!);
+      });
       
     }
   }
@@ -52,15 +64,15 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
         ),
         body: TabBarView(children: [
-          ListOrder(fetchPOder(token!)),
-          ListOrder(fetchDOder(token!)),
-          ListOrder(fetchSOder(token!)),
-          ListOrder(fetchCOder(token!))
+          ListOrder(_listPOrder, 0),
+          ListOrder(_listDOrder, 1),
+          ListOrder(_listSOrder, 2),
+          ListOrder(_listCOrder, 3)
         ]), 
       ));
   }
 
-  Column ListOrder(Future<List<Order>> listOrder){
+  Column ListOrder(Future<List<Order>> listOrder, int index){
     return Column(
             children: [    
               Container( 
@@ -73,21 +85,35 @@ class _HistoryPageState extends State<HistoryPage> {
                           shrinkWrap: true,
                           itemCount: snapshot.data?.length,
                           itemBuilder: (context, index) {
-                            return Card(
-                              child: Row(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          SizedBox(
-                                            width: 100,
-                                            child: Text(snapshot.data![index].name.toString())), 
-                                        ],
-                                      ), 
-                                    ],
-                                  ) 
-                                ]),
+                            return GestureDetector(
+                              onTap: () async {
+                                    String rs = await Navigator.push(context,MaterialPageRoute(
+                                    builder: (context) => DetailOrder(index: index,order: snapshot.data![index],)));   
+                                    if(rs == "cancle"){
+                                      setState(() {
+                                        _listPOrder = fetchPOder(token!);
+                                        _listDOrder = fetchDOder(token!); 
+                                        _listSOrder = fetchSOder(token!);
+                                        _listCOrder = fetchCOder(token!);
+                                      });
+                                    }
+                                    },
+                              child: Card(
+                                child: Row(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(snapshot.data![index].name.toString())), 
+                                          ],
+                                        ), 
+                                      ],
+                                    ) 
+                                  ]),
+                              ),
                             );
                           },
                         );

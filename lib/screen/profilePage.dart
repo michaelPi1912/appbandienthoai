@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:project_final/network/networkApi.dart';
 import 'package:project_final/screen/historyPage.dart';
 import 'package:project_final/screen/inforPage.dart';
+import 'package:project_final/screen/wishPage.dart';
 import 'package:project_final/variable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -184,9 +185,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           icon: const Icon(Icons.favorite),
                           onPressed: () {
-                          setState(() {
-                            isLogin = false;
-                          });
+                          Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const WishPage()));
                         },label: const Text("Sản phẩm yêu thích"),),
                         // Discount
                         ElevatedButton.icon(
@@ -227,7 +229,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         },label: const Text("Log out"),),
                         ]);
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    setState(() {
+                      isLogin =false;
+                      sharedPreferences.clear;
+                      sharedPreferences.commit();
+                    });
                   }
                   return const Center(
                     child: CircularProgressIndicator(),
