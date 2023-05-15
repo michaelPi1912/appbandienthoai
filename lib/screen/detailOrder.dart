@@ -16,9 +16,9 @@ class DetailOrder extends StatefulWidget {
 }
 
 class _DetailOrderState extends State<DetailOrder> {
-
   Order? order;
   int? index;
+
 
   @override
   void initState() {
@@ -26,7 +26,123 @@ class _DetailOrderState extends State<DetailOrder> {
     index = widget.index;
     super.initState();
   }
-
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromARGB(255, 243, 243, 243),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context,"aaaa"),
+        ),
+      ),
+      body: Center(
+        child: Column(children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text("Chi tiết đơn hàng"),
+          ),
+          SizedBox(
+            height: 400,
+            child: Container(
+              decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text("Danh sách Sản Phẩm"),
+                  ),
+                  Expanded(child: ListView.builder(
+                    itemCount: order!.cartResponseFEs!.length,
+                    itemBuilder: (context, index){
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            border: Border(
+                              top: BorderSide(color: Colors.grey),
+                              left: BorderSide(color: Colors.grey),
+                              right: BorderSide(color: Colors.grey),
+                              bottom: BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Image.network(
+                                  order!.cartResponseFEs![index].image.toString(),
+                                  width: MediaQuery.of(context).size.width * 0.4,
+                                  height: 100,
+                                  fit: BoxFit.fill,
+                                ),
+                                const SizedBox(width: 10,),
+                                Column(children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text("Giá: ${order!.cartResponseFEs![index].price}"),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text("Số lượng: ${order!.cartResponseFEs![index].quantity}"),
+                                )
+                              ],)
+                            ],
+                          ),
+                        ),
+                      );
+                    })),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10,),
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+            child: Column(
+                  children:[ 
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child:
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("Tạm tính: ${totalPrice()}")),
+                    ),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child:Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text("Phí Ship: 20000"),
+                    )),
+                    Align(
+                    alignment: Alignment.centerLeft,
+                    child:Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("Tổng tiền: ${order!.total}"),
+                    )),]),
+            ),
+            SizedBox(height: 10,),
+            index == 0? ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.red,
+              ),
+              onPressed: (){
+                deleteOrder();
+              }, child: Text("Hủy đơn")): const SizedBox()
+        ]),)
+    );
+  }
   deleteOrder() async {
     Map<String,String> headers ={"content-type" : "application/json",
                                 "accept" : "*/*","Authorization": "Bearer " + token!};
@@ -37,24 +153,12 @@ class _DetailOrderState extends State<DetailOrder> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context,"aaaa"),
-        ),
-      ),
-      body: Center(
-        child: Column(children: [
-          Text(order!.total.toString()),
-          ElevatedButton(
-            onPressed: (){
-              deleteOrder();
-            }, child: Text("Hủy đơn"))
-        ]),
-      ),
-    );
+  double totalPrice(){
+    double sum =0;
+    order!.cartResponseFEs!.forEach((element) {
+      sum += ((element.price!)*(element.quantity!.toDouble()));
+    });
+    return sum;
   }
+
 }

@@ -3,6 +3,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:project_final/screen/detaiProductPage.dart';
+import 'package:project_final/screen/searchPage.dart';
 
 import '../network/networkApi.dart';
 
@@ -14,6 +15,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   final urlImages = [
     'https://cdn.hoanghamobile.com/i/home/Uploads/2022/10/11/vivo-v25-series-1200x382.jpg',
     'https://cdn.hoanghamobile.com/i/home/Uploads/2022/10/21/iphone-14-1200x382.jpg',
@@ -42,17 +52,31 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 20),
                 FractionallySizedBox(
                   widthFactor: 0.8,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            filled: true,
+                            hintStyle: TextStyle(color: Colors.grey[800]),
+                            hintText: "Bạn muốn tìm kiếm sản phẩm nào ?",
+                            fillColor: Colors.white70,
+                          ),
+                        ),
                       ),
-                      filled: true,
-                      hintStyle: TextStyle(color: Colors.grey[800]),
-                      hintText: "Bạn muốn tìm kiếm sản phẩm nào ?",
-                      fillColor: Colors.white70,
-                      prefixIcon: const Icon(Icons.search),
-                    ),
+                      IconButton(onPressed: (){
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SearchPage(
+                                          query: searchController.text,
+                                        )));
+                      }, icon: const Icon(Icons.search))
+                    ],
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -78,7 +102,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(10.0),
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -92,12 +116,12 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: <Widget>[
                   const Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(10),
                     child: Align(alignment: Alignment.centerLeft,
                       child: Text("THƯƠNG HIỆU NỔI BẬT")),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(4.0),
                     child: Row(
                       children: [
                         ClipRRect(
@@ -105,15 +129,15 @@ class _HomePageState extends State<HomePage> {
                           child: Image.network(
                               'https://cdn.tgdd.vn/Brand/1/logo-iphone-220x48.png',
                               height: 75.0,
-                              width: 150.0,
+                              width: 75.0,
                               ),
                         ),
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(4.0),
                           child: Image.network(
                               'https://cdn.tgdd.vn/Brand/1/samsungnew-220x48-1.png',
-                              height: 50.0,
-                              width: 50.0,
+                              height: 75.0,
+                              width: 75.0,
                               ),
                         ),
                       ],

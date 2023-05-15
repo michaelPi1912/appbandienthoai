@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:project_final/network/networkApi.dart';
-import 'package:project_final/screen/detailOrder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/oderModel.dart';
 import '../variable.dart';
+import 'detailOrder.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key,});
@@ -38,7 +38,6 @@ class _HistoryPageState extends State<HistoryPage> {
         _listSOrder = fetchSOder(token!);
         _listCOrder = fetchCOder(token!);
       });
-      
     }
   }
 
@@ -72,7 +71,7 @@ class _HistoryPageState extends State<HistoryPage> {
       ));
   }
 
-  Column ListOrder(Future<List<Order>> listOrder, int index){
+  Column ListOrder(Future<List<Order>> listOrder,int number){
     return Column(
             children: [    
               Container( 
@@ -86,18 +85,18 @@ class _HistoryPageState extends State<HistoryPage> {
                           itemCount: snapshot.data?.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
-                              onTap: () async {
-                                    String rs = await Navigator.push(context,MaterialPageRoute(
-                                    builder: (context) => DetailOrder(index: index,order: snapshot.data![index],)));   
-                                    if(rs == "cancle"){
-                                      setState(() {
-                                        _listPOrder = fetchPOder(token!);
-                                        _listDOrder = fetchDOder(token!); 
-                                        _listSOrder = fetchSOder(token!);
-                                        _listCOrder = fetchCOder(token!);
-                                      });
-                                    }
-                                    },
+                              onTap: () async{
+                                String rs = await Navigator.push(context,MaterialPageRoute(
+                                  builder: (context) => DetailOrder(index: number,order: snapshot.data![index],))); 
+                                if(rs == "cancle"){
+                                  setState(() {
+                                    _listPOrder = fetchPOder(token!);
+                                    _listDOrder = fetchDOder(token!); 
+                                    _listSOrder = fetchSOder(token!);
+                                    _listCOrder = fetchCOder(token!);
+                                  });
+                                }
+                              },
                               child: Card(
                                 child: Row(
                                   children: [
@@ -106,8 +105,25 @@ class _HistoryPageState extends State<HistoryPage> {
                                         Column(
                                           children: [
                                             SizedBox(
-                                              width: 100,
-                                              child: Text(snapshot.data![index].name.toString())), 
+                                              width: MediaQuery.of(context).size.height - 300,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Text("Mã đơn hàng:"),
+                                                      SizedBox(width: 10,),
+                                                      Text(snapshot.data![index].name.toString()),
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Text("Tổng tiền:"),
+                                                      SizedBox(width: 10,),
+                                                      Text(snapshot.data![index].total.toString()),
+                                                    ],
+                                                  ),
+                                                ],
+                                              )), 
                                           ],
                                         ), 
                                       ],

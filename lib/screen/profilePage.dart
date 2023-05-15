@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_final/network/networkApi.dart';
+import 'package:project_final/screen/changePassPage.dart';
 import 'package:project_final/screen/historyPage.dart';
 import 'package:project_final/screen/inforPage.dart';
 import 'package:project_final/screen/wishPage.dart';
@@ -19,7 +20,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  
   late SharedPreferences sharedPreferences;
   bool isLogin = false;
 
@@ -33,57 +33,53 @@ class _ProfilePageState extends State<ProfilePage> {
     checkLoginStatus();
   }
 
-  checkLoginStatus() async{
+  checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
-    if( sharedPreferences.getString("token") == null){
+    if (sharedPreferences.getString("token") == null) {
       setState(() {
         isLogin = false;
       });
-    }else{
+    } else {
       setState(() {
         token = sharedPreferences.getString("token");
         isLogin = true;
       });
     }
   }
-    
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     phoneController.dispose();
-    super.dispose();
-  }
-
-  void disposeP() {
-    // Clean up the controller when the widget is disposed.
     passwordController.dispose();
     super.dispose();
   }
+
   //Sign In Void
   signIn(String email, pass) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    Map data = {
-      'phone': email,
-      'password': pass
+    Map data = {'phone': email, 'password': pass};
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "accept": "*/*",
     };
-    Map<String,String> headers ={"content-type" : "application/json",
-                                "accept" : "*/*",};
     var jsonResponse = null;
-    var response = await http.post(Uri.parse('https://phone-s.herokuapp.com/api/auth/login'),
-                             body: jsonEncode(data), headers: headers);
-    if(response.statusCode == 200) {
+    var response = await http.post(
+        Uri.parse('https://phone-s.herokuapp.com/api/auth/login'),
+        body: jsonEncode(data),
+        headers: headers);
+    if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
-      if(jsonResponse != null) {
+      if (jsonResponse != null) {
         //Xu ly data User from body
         setState(() {
           token = jsonResponse['data']['accessToken'];
           isLogin = true;
         });
-        sharedPreferences.setString("token", jsonResponse['data']['accessToken']);
-        
+        sharedPreferences.setString(
+            "token", jsonResponse['data']['accessToken']);
       }
-    }
-    else {
+    } else {
       setState(() {
         isLogin = false;
       });
@@ -94,9 +90,8 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        children: [
-          Center(
+      body: ListView(children: [
+        Center(
           child: Container(
             color: Colors.red,
             alignment: Alignment.center,
@@ -108,143 +103,145 @@ class _ProfilePageState extends State<ProfilePage> {
       ]),
     );
   }
+
   //isLogin == true
   Widget detailProfilePage() {
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage("https://i.pinimg.com/736x/d0/0c/5a/d00c5aac0b36935bdb01d05aea3da010.jpg"),
-            fit: BoxFit.cover,
-          ),),
+      color: Colors.white, // Set the background color to white
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FutureBuilder(
           future: fetchUser(token!),
-          builder: (context, snapshot){
+          builder: (context, snapshot) {
             if (snapshot.hasData) {
-                    return Column(
-                      children:[
-                        //Avatar
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircleAvatar(
-                            backgroundImage: NetworkImage(snapshot.data!.img.toString()),
-                            radius: 100,
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              alignment: Alignment.centerLeft,
-                              primary: Color.fromARGB(100, 22, 44, 33),
-                          ),
-                          icon: const Icon(Icons.person),
+              final user = snapshot.data!;
+              return Column(
+                children: [
+                  // Avatar
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(user.img.toString()),
+                      radius: 100,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Buttons
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        _buildProfileButton(
+                          icon: Icons.person,
+                          label: 'Thông tin tài khoản',
                           onPressed: () {
-                          setState(() {
-                            Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => InforPage()));
-                          });
-                        },label: const Text("Thông tin tài khoản"),),
-                        //History
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              alignment: Alignment.centerLeft,
-                              primary: const Color.fromARGB(100, 22, 44, 33),
-                          ),
-                          icon: const Icon(Icons.history),
-                          onPressed: () {
+                            setState(() {
                               Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => const HistoryPage()));
-                        },label: const Text("Lịch sử mua hàng"),),
-                        //Notice
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              alignment: Alignment.centerLeft,
-                              primary: Color.fromARGB(100, 22, 44, 33),
-                          ),
-                          icon: const Icon(Icons.notifications),
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => InforPage()),
+                              );
+                            });
+                          },
+                        ),
+                        _buildProfileButton(
+                          icon: Icons.history,
+                          label: 'Lịch sử mua hàng',
                           onPressed: () {
-                          setState(() {
-                            isLogin = false;
-                          });
-                        },label: const Text("Thông báo"),),
-                        // Favorite Product
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              alignment: Alignment.centerLeft,
-                              primary: Color.fromARGB(100, 22, 44, 33),
-                          ),
-                          icon: const Icon(Icons.favorite),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HistoryPage()),
+                            );
+                          },
+                        ),
+                        _buildProfileButton(
+                          icon: Icons.notifications,
+                          label: 'Thông báo',
                           onPressed: () {
-                          Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => const WishPage()));
-                        },label: const Text("Sản phẩm yêu thích"),),
-                        // Discount
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              alignment: Alignment.centerLeft,
-                              primary: Color.fromARGB(100, 22, 44, 33),
-                          ),
-                          icon: const Icon(Icons.discount),
+                            setState(() {
+                              isLogin = false;
+                            });
+                          },
+                        ),
+                        _buildProfileButton(
+                          icon: Icons.favorite,
+                          label: 'Sản phẩm yêu thích',
                           onPressed: () {
-                          
-                        },label: const Text("Ưu đãi của bạn"),),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              alignment: Alignment.centerLeft,
-                              primary: Color.fromARGB(100, 22, 44, 33),
-                          ),
-                          icon: const Icon(Icons.password),
+                            setState(() {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const WishPage()),
+                              );
+                            });
+                          },
+                        ),
+                        _buildProfileButton(
+                          icon: Icons.discount,
+                          label: 'Ưu đãi của bạn',
+                          onPressed: () {},
+                        ),
+                        _buildProfileButton(
+                          icon: Icons.password,
+                          label: 'Đổi Mật Khẩu',
                           onPressed: () {
-                          
-                        },label: const Text("Đổi Mật Khẩu"),),
-                        //Logout
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              alignment: Alignment.centerLeft,
-                              primary: Color.fromARGB(100, 22, 44, 33),
-                          ),
-                          icon: const Icon(Icons.exit_to_app),
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const ChangePassPage()),);
+                          },
+                        ),
+                        _buildProfileButton(
+                          icon: Icons.exit_to_app,
+                          label: 'Log out',
                           onPressed: () {
-                            sharedPreferences.clear;
+                            sharedPreferences.clear();
                             sharedPreferences.commit();
                             setState(() {
                               isLogin = false;
                               // token = "";
                             });
-                        },label: const Text("Log out"),),
-                        ]);
-                  } else if (snapshot.hasError) {
-                    setState(() {
-                      isLogin =false;
-                      sharedPreferences.clear;
-                      sharedPreferences.commit();
-                    });
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-            
-          }
-          
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return LoginForm();
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
         ),
       ),
     );
   }
+
+  Widget _buildProfileButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size.fromHeight(50),
+          alignment: Alignment.centerLeft,
+          primary: const Color.fromARGB(100, 22, 44, 33),
+        ),
+        icon: Icon(icon),
+        label: Text(label),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
   //isLogin == false
   Widget LoginForm() {
     return Container(
@@ -300,7 +297,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width*0.2,
+                  width: MediaQuery.of(context).size.width * 0.2,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Colors.green,
@@ -322,7 +319,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 8.0),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width*0.2,
+                  width: MediaQuery.of(context).size.width * 0.2,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Colors.indigo,
@@ -351,34 +348,95 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+Register(String phone, String password) async {
+    Map data = {'phone': phone, 'password': password};
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "accept": "*/*",
+    };
+    var jsonResponse = null;
+    var response = await http.post(
+        Uri.parse('https://phone-s.herokuapp.com/api/user/register'),
+        body: jsonEncode(data),
+        headers: headers);
+    if (response.statusCode == 200) {
+      print("Register success");
+    } else {
+      print(response.body);
+    }
+  }
 //Dialog Register
 Future<void> _showAlertDialogRegister(BuildContext context) async {
+
+  final TextEditingController passwordRController = TextEditingController();
+  final TextEditingController phoneRController = TextEditingController();
+  final TextEditingController passwordR1Controller = TextEditingController();
+
+
   return showDialog<void>(
     context: context,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
-      return AlertDialog( // <-- SEE HERE
+      return AlertDialog(
+        title: const Text('Register'), // Add a title to the dialog
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              const Text("Register"),
+              const Text("Please fill in the registration form:"),
+              const SizedBox(
+                  height:
+                      16), // Add some spacing between the text and text fields
               TextField(
-                
+                controller: phoneRController,
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number', // Provide a label for the text field
+                  border:
+                      OutlineInputBorder(), // Add a border around the text field
+                ),
               ),
-              TextField(),
-              TextField(),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(onPressed: () {
-                  Navigator.of(context).pop();
-                }, child: const Text('Register')),
+              const SizedBox(height: 8),
+              TextField(
+                obscureText: true,
+                controller: passwordRController,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(onPressed: () {
-                  Navigator.of(context).pop();
-                }, child: const Text('Cancel')),
-              )
+              const SizedBox(height: 8),
+              TextField(
+                controller: passwordR1Controller,
+                decoration: const InputDecoration(
+                  labelText: 'Repassword',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true, // Hide the password input
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      if(passwordRController.text == passwordR1Controller.text){
+                        Register(phoneRController.text, passwordRController.text);
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: const Text('Register'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary:
+                          Colors.grey[400], // Use a different background color
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -386,7 +444,3 @@ Future<void> _showAlertDialogRegister(BuildContext context) async {
     },
   );
 }
-
-
- 
- 
