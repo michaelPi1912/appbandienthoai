@@ -270,7 +270,6 @@ Future<List<Product>> fetchSearchList(String query) async {
 Province parseProvincebyId(String resBody) {
   final Map<String, dynamic> jsonMap = jsonDecode(resBody);
   Province province = Province.fromJson(jsonMap);
-  
   return province;
 }
 // my url is https://phone-s.herokuapp.com/api/user/order
@@ -322,6 +321,88 @@ Future<Commune> fetchCommunebyId(String commune) async {
       headers: headers);
   if (res.statusCode == 200) {
     return compute(parseCommunebyId, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+
+// all Provine
+List<Province> parseProvince(String resBody) {
+  var list = json.decode(resBody) as List<dynamic>;
+  List<Province> provinceList = list
+      .map((provinceJson) => Province.fromJson(provinceJson))
+      .toList();
+  provinceList.forEach((element) {
+    if(element.name!= null){
+      element.name = utf8.decode(element.name!.codeUnits);
+    }
+  });
+  return provinceList;
+}
+// my url is https://phone-s.herokuapp.com/api/user/order
+Future<List<Province>> fetchProvince() async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*",};
+  final res = await http
+      .get(Uri.parse('https://provinces.open-api.vn/api/p/'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseProvince, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+
+
+List<District> parseDistrictbyProvince(String resBody) {
+  final Map<String, dynamic> jsonMap = jsonDecode(resBody);
+  final List<dynamic> districtListJson = jsonMap['districts'];
+  List<District> districtList = districtListJson
+      .map((districtJson) => District.fromJson(districtJson))
+      .toList();
+  districtList.forEach((element) {
+    if(element.name!= null){
+      element.name = utf8.decode(element.name!.codeUnits);
+    }
+  });
+  return districtList;
+}
+// my url is https://phone-s.herokuapp.com/api/user/order
+Future<List<District>> fetchDistrictbyProvince(String province) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*",};
+  final res = await http
+      .get(Uri.parse('https://provinces.open-api.vn/api/p/${province}/?depth=2'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseDistrictbyProvince, res.body);
+  } else {
+    throw Exception('Request API error');
+  }
+}
+
+List<Commune> parseCommunebyDistrict(String resBody) {
+  final Map<String, dynamic> jsonMap = jsonDecode(resBody);
+  final List<dynamic> communeListJson = jsonMap['wards'];
+  List<Commune> communeList = communeListJson
+      .map((communetJson) => Commune.fromJson(communetJson))
+      .toList();
+  communeList.forEach((element) {
+    if(element.name!= null){
+      element.name = utf8.decode(element.name!.codeUnits);
+    }
+  });
+  return communeList;
+}
+// my url is https://phone-s.herokuapp.com/api/user/order
+Future<List<Commune>> fetchCommunebyDistrict(String district) async {
+  Map<String,String> headers ={"content-type" : "application/json",
+                                "accept" : "*/*",};
+  final res = await http
+      .get(Uri.parse('https://provinces.open-api.vn/api/d/${district}/?depth=2'),
+      headers: headers);
+  if (res.statusCode == 200) {
+    return compute(parseCommunebyDistrict, res.body);
   } else {
     throw Exception('Request API error');
   }

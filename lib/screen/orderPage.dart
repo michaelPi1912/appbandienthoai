@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:project_final/network/networkApi.dart';
 import 'package:http/http.dart' as http;
+import 'package:project_final/screen/updateAddress.dart';
 
 import '../model/addressModel.dart';
 import '../model/cartModel.dart';
@@ -49,25 +50,6 @@ class _OrderPageState extends State<OrderPage> {
   }
   void getAddress(){
     _futureAddress = fetchAddress(token!);
-    // _futureAddress.then((value) {
-    //   setState(() {
-    //    address1 = value[0];
-    //    _province = fetchProvincebyId(address1!.province.toString());
-    //   _district = fetchDistrictbyId(address1!.district.toString());
-    //   _commune = fetchCommunebyId(address1!.commune.toString());
-
-    //   _province!.then((value) {
-    //     setState(() {
-    //       province = utf8.decode(value.name!.codeUnits);
-    //     });
-        
-    //   });
-    //   _district!.then((value) {
-    //     district = value.name;
-    //     });
-    //   _commune!.then((value) => commune = value.name);
-    //   });
-    // });
   }
   void getIdAddress(){
     _futureAddress.then((value) => {
@@ -279,8 +261,17 @@ class _OrderPageState extends State<OrderPage> {
                                         ),
                                         Align(
                                           alignment: Alignment.centerRight,
-                                          child: IconButton(onPressed: (){
-                                        
+                                          child: IconButton(onPressed: () async {
+                                            String rs = await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => UpdateAddressPage(id: snapshot.data![0].id.toString(),)));
+
+                                            if(rs == "address"){
+                                              setState(() {
+                                                _futureAddress = fetchAddress(token!);
+                                              });
+                                            }
                                           }, icon: const Icon(Icons.edit)),
                                         )
                                       ],
